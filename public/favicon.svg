@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" fill="#641B2A"/>
+  <path d="M128 80 L180 40 L180 100 C180 120 160 135 128 140 L128 200 L150 200 L150 220 L106 220 L106 200 L128 200 L128 140 C96 135 76 120 76 100 L76 40 L128 80 Z" fill="#C6A15B"/>
+  <text x="128" y="115" font-family="serif" font-size="48" font-weight="bold" fill="#641B2A" text-anchor="middle" dominant-baseline="middle">GP</text>
+</svg>

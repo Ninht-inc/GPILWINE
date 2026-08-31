@@ -1,0 +1,429 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/gpil_wine/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  CONTENT_ADMIN
+  ENQUIRY_MANAGER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String
+  role          UserRole  @default(SUPER_ADMIN)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  auditLogs     AuditLog[]
+  quoteNotes    QuoteNote[]
+  enquiryNotes  EnquiryNote[]
+  distributorNotes DistributorNote[]
+}
+
+enum WineStatus {
+  PUBLISHED
+  DRAFT
+  COMING_SOON
+  ARCHIVED
+}
+
+model Wine {
+  id                  String     @id @default(cuid())
+  name                String
+  slug                String     @unique
+  category            String?
+  subtitle            String?
+  vintage             String?
+  shortDescription    String?
+  fullDescription     String?    @db.Text
+  tagline             String?
+  status              WineStatus @default(DRAFT)
+  featured            Boolean    @default(false)
+  displayOrder        Int        @default(0)
+
+  // Technical
+  country             String?
+  region              String?
+  wineOrigin          String?
+  bottleSize          String?
+  alcohol             String?
+  producer            String?
+  producerAddress     String?
+  madeFor             String?
+  nigerianImporter    String?
+  nafdacRegistration  String?
+  containsSulphites   String?
+  wineDesignation     String?
+
+  // Tasting
+  colour              String?
+  aroma               String?
+  palate              String?
+  body                String?
+  sweetness           String?
+  acidity             String?
+  finish              String?
+
+  // Lifestyle
+  foodPairings        String[]   @default([])
+  servingTemp         String?
+  servingInstructions String?    @db.Text
+  storageInstructions String?
+  idealOccasions      String[]   @default([])
+  idealCustomer       String?
+
+  // Media
+  mainImage           String?
+  transparentImage    String?
+  heroImage           String?
+  cardImage           String?
+  gallery             String[]   @default([])
+  videoUrl            String?
+
+  // SEO
+  seoTitle            String?
+  metaDescription     String?
+  seoKeywords         String[]   @default([])
+  ogImage             String?
+  canonicalUrl        String?
+
+  // Enquiry
+  allowQuoteRequests  Boolean    @default(true)
+  comingSoon          Boolean    @default(false)
+  minimumQuantity     Int?       @default(1)
+
+  // Price (optional, future)
+  price               Float?
+  currency            String?
+
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  quoteItems          QuoteItem[]
+
+  @@index([status])
+  @@index([displayOrder])
+}
+
+enum QuoteStatus {
+  NEW
+  REVIEWING
+  CONTACTED
+  QUOTE_SENT
+  FOLLOW_UP
+  COMPLETED
+  CANCELLED
+  CLOSED
+}
+
+model Quote {
+  id                   String      @id @default(cuid())
+  referenceNumber      String      @unique
+  
+  // Customer
+  fullName             String
+  email                String
+  phone                String
+  whatsapp             String?
+  preferredContact     String      @default("email")
+  
+  // Location
+  country              String
+  state                String
+  city                 String?
+  deliveryLocation     String?
+  fullAddress          String?
+  
+  // Details
+  occasion             String?
+  requiredDate         String?
+  message              String?     @db.Text
+  consent              Boolean     @default(false)
+  
+  status               QuoteStatus @default(NEW)
+  viewed               Boolean     @default(false)
+  
+  // Email tracking
+  emailDeliveryStatus  String?     @default("pending")
+  emailDeliveryError   String?
+  adminEmailStatus     String?     @default("pending")
+  adminEmailError      String?
+  
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  
+  items                QuoteItem[]
+  notes                QuoteNote[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model QuoteItem {
+  id          String @id @default(cuid())
+  quoteId     String
+  wineId      String
+  wineName    String
+  bottleSize  String?
+  quantity    Int    @default(1)
+  
+  quote       Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  wine        Wine   @relation(fields: [wineId], references: [id])
+
+  @@index([quoteId])
+}
+
+model QuoteNote {
+  id        String   @id @default(cuid())
+  quoteId   String
+  content   String   @db.Text
+  authorId  String
+  createdAt DateTime @default(now())
+  
+  quote     Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([quoteId])
+}
+
+enum EnquiryType {
+  GENERAL
+  PRODUCT
+  QUOTE_PURCHASE
+  DISTRIBUTOR
+  STOCKIST
+  CORPORATE_EVENT
+  MEDIA_PARTNERSHIP
+  STOCKIST_REQUEST
+  OTHER
+}
+
+enum EnquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+}
+
+model Enquiry {
+  id                  String        @id @default(cuid())
+  referenceNumber     String        @unique
+  type                EnquiryType   @default(GENERAL)
+  fullName            String
+  email               String
+  phone               String?
+  whatsapp            String?
+  subject             String?
+  message             String        @db.Text
+  
+  // For stockist requests
+  country             String?
+  state               String?
+  city                String?
+  wineInterest        String?
+  quantity            String?
+  
+  status              EnquiryStatus @default(NEW)
+  viewed              Boolean       @default(false)
+  
+  emailDeliveryStatus String?       @default("pending")
+  emailDeliveryError  String?
+  adminEmailStatus    String?       @default("pending")
+  adminEmailError     String?
+  
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  
+  notes               EnquiryNote[]
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model EnquiryNote {
+  id         String   @id @default(cuid())
+  enquiryId  String
+  content    String   @db.Text
+  authorId   String
+  createdAt  DateTime @default(now())
+  
+  enquiry    Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author     User     @relation(fields: [authorId], references: [id])
+
+  @@index([enquiryId])
+}
+
+enum DistributorStatus {
+  NEW
+  UNDER_REVIEW
+  CONTACTED
+  QUALIFIED
+  FOLLOW_UP
+  APPROVED
+  DECLINED
+  CLOSED
+}
+
+model DistributorEnquiry {
+  id                   String            @id @default(cuid())
+  referenceNumber      String            @unique
+  
+  // Contact
+  firstName            String
+  lastName             String
+  businessEmail        String
+  phone                String?
+  whatsapp             String?
+  
+  // Business
+  businessName         String
+  businessType         String?
+  registrationNumber   String?
+  website              String?
+  socialMediaUrl       String?
+  
+  // Location
+  country              String
+  stateRegion          String
+  city                 String?
+  businessAddress      String?
+  
+  // Profile
+  yearsInBusiness      String?
+  currentBrands        String?
+  areasServed          String?
+  monthlyRequirement   String?
+  interestedProducts   String[]          @default([])
+  
+  message              String?           @db.Text
+  consent              Boolean           @default(false)
+  
+  status               DistributorStatus @default(NEW)
+  viewed               Boolean           @default(false)
+  
+  emailDeliveryStatus  String?           @default("pending")
+  emailDeliveryError   String?
+  adminEmailStatus     String?           @default("pending")
+  adminEmailError      String?
+  
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  
+  notes                DistributorNote[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model DistributorNote {
+  id                  String             @id @default(cuid())
+  distributorId       String
+  content             String             @db.Text
+  authorId            String
+  createdAt           DateTime           @default(now())
+  
+  distributor         DistributorEnquiry @relation(fields: [distributorId], references: [id], onDelete: Cascade)
+  author              User               @relation(fields: [authorId], references: [id])
+
+  @@index([distributorId])
+}
+
+model Stockist {
+  id               String   @id @default(cuid())
+  businessName     String
+  country          String
+  state            String
+  city             String?
+  address          String?
+  phone            String?
+  whatsapp         String?
+  website          String?
+  googleMapsUrl    String?
+  latitude         Float?
+  longitude        Float?
+  productsAvailable String[] @default([])
+  openingHours     String?
+  featured         Boolean  @default(false)
+  active           Boolean  @default(true)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([country, state])
+  @@index([active])
+}
+
+model FAQ {
+  id           String   @id @default(cuid())
+  question     String
+  answer       String   @db.Text
+  displayOrder Int      @default(0)
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([displayOrder])
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+  
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
+}
+
+model SiteContent {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  content   String   @db.Text
+  published Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+}
+
+model Media {
+  id              String   @id @default(cuid())
+  fileName        String
+  cloudStoragePath String
+  contentType     String
+  size            Int
+  altText         String?
+  isPublic        Boolean  @default(true)
+  url             String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?  @db.Text
+  createdAt DateTime @default(now())
+  
+  admin     User     @relation(fields: [adminId], references: [id])
+
+  @@index([entity])
+  @@index([createdAt])
+}

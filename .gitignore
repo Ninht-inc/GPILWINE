@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.yarn/
+
+# Build
+.next/
+.build/
+out/
+dist/
+build/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+
+# System
+.deploy/
+.prisma/
+tsconfig.tsbuildinfo
+next-env.d.ts
+
+# OS
+.DS_Store
+*.log
+
+# IDE
+.vscode/
+.idea/
