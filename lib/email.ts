@@ -1,3 +1,15 @@
+import { getSmtpConfig, isSmtpUsable, sendMail } from '@/lib/mailer'
+
+/**
+ * Sends a transactional email.
+ *
+ * Delivery order:
+ *   1. cPanel / webmail SMTP  — when configured in /admin/email-settings (or via SMTP_* env vars)
+ *   2. Abacus.AI notifications — legacy fallback, used only while SMTP is not set up
+ *
+ * The signature is unchanged so the form routes (contact, quotes, distributor,
+ * stockist-request) don't need to know which transport ran.
+ */
 export async function sendNotificationEmail({
   notificationId,
   recipientEmail,
@@ -12,12 +24,29 @@ export async function sendNotificationEmail({
   body: string
   replyTo?: string
   senderAlias?: string
-}) {
+}): Promise<{ success: boolean; error?: string }> {
+  // --- 1. SMTP -------------------------------------------------------------
+  const smtp = await getSmtpConfig()
+  if (isSmtpUsable(smtp)) {
+    const result = await sendMail(
+      { to: recipientEmail, subject, html: body, replyTo },
+      smtp
+    )
+    if (result.success) return { success: true }
+    // fall through to the legacy transport if SMTP send failed
+    console.error('SMTP send failed, falling back to Abacus:', result.error)
+  }
+
+  // --- 2. Abacus.AI (legacy) --------------------------------------------------
   const appUrl = process.env.NEXTAUTH_URL || ''
   let senderEmail = 'noreply@mail.abacusai.app'
   try {
     senderEmail = `noreply@${new URL(appUrl).hostname}`
   } catch {}
+
+  if (!process.env.ABACUSAI_API_KEY) {
+    return { success: false, error: 'No email transport configured (set up SMTP in Email Settings)' }
+  }
 
   try {
     const response = await fetch('https://apps.abacus.ai/api/sendNotificationEmail', {

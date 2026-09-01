@@ -20,6 +20,13 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const { searchParams } = new URL(request.url)
+  if (searchParams.get('hard') === 'true') {
+    await prisma.stockist.delete({ where: { id: params.id } })
+    await createAuditLog({ adminId: session.user.id, action: 'DELETE', entity: 'Stockist', entityId: params.id })
+    return NextResponse.json({ success: true })
+  }
+
   await prisma.stockist.update({ where: { id: params.id }, data: { active: false } })
   await createAuditLog({ adminId: session.user.id, action: 'ARCHIVE', entity: 'Stockist', entityId: params.id })
   return NextResponse.json({ success: true })

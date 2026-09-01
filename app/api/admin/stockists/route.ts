@@ -11,7 +11,7 @@ export async function GET() {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const stockists = await prisma.stockist.findMany({ orderBy: { createdAt: 'desc' } })
-  return NextResponse.json(stockists)
+  return NextResponse.json({ stockists })
 }
 
 export async function POST(request: Request) {

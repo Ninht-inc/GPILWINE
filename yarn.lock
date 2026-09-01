@@ -3937,6 +3937,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/nodemailer@npm:6.4.17":
+  version: 6.4.17
+  resolution: "@types/nodemailer@npm:6.4.17"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/689abb3005cf36cf89c2abe56f0aa4469a37e0814633a73fbeb35732e856f4b0d7ab32b6d91585038b6941f5b70db58ec2bd147ebe9f73e528eb6c99604f4e82
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
@@ -4832,6 +4841,7 @@ __metadata:
     "@types/bcryptjs": "npm:2.4.6"
     "@types/jsonwebtoken": "npm:9.0.5"
     "@types/node": "npm:20.6.2"
+    "@types/nodemailer": "npm:6.4.17"
     "@types/plotly.js": "npm:2.35.5"
     "@types/react": "npm:18.2.22"
     "@types/react-dom": "npm:18.2.7"
@@ -4866,6 +4876,7 @@ __metadata:
     next: "npm:14.2.28"
     next-auth: "npm:4.24.11"
     next-themes: "npm:0.3.0"
+    nodemailer: "npm:6.9.16"
     plotly.js: "npm:2.35.3"
     postcss: "npm:8.4.30"
     prisma: "npm:6.7.0"
@@ -9534,6 +9545,13 @@ __metadata:
   version: 2.0.53
   resolution: "node-releases@npm:2.0.53"
   checksum: 10c0/db9fb29b21ec12e223ead8bd9406100ff14fce01678a9a4865e288098456b84869431421a739f216aa520b6f57d9425f6537662501ae8a2d9e1771bfa87751bc
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:6.9.16":
+  version: 6.9.16
+  resolution: "nodemailer@npm:6.9.16"
+  checksum: 10c0/9fd73ab4ab5b81544c3c9820afbe386369aba442f997b2f58d171222a898a7aed580fc100bfe6eebc194f18ba6e169d67ee40ca64d32d69022d89e575cef97a4
   languageName: node
   linkType: hard
 

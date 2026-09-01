@@ -19,7 +19,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   if (!enquiry.viewed) {
     await prisma.enquiry.update({ where: { id: params.id }, data: { viewed: true } })
   }
-  return NextResponse.json(enquiry)
+  return NextResponse.json({ enquiry })
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
@@ -34,5 +34,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     await prisma.enquiry.update({ where: { id: params.id }, data: { status: data.status } })
     await createAuditLog({ adminId: session.user.id, action: 'STATUS_CHANGE', entity: 'Enquiry', entityId: params.id, details: `Status changed to ${data.status}` })
   }
+  return NextResponse.json({ success: true })
+}
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  await prisma.enquiryNote.deleteMany({ where: { enquiryId: params.id } })
+  await prisma.enquiry.delete({ where: { id: params.id } })
+  await createAuditLog({ adminId: session.user.id, action: 'DELETE', entity: 'Enquiry', entityId: params.id })
   return NextResponse.json({ success: true })
 }

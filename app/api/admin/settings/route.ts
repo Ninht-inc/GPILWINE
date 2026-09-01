@@ -10,17 +10,17 @@ export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const settings = await prisma.siteSetting.findMany()
-  const map: Record<string, string> = {}
-  settings.forEach(s => { map[s.key] = s.value })
-  return NextResponse.json(map)
+  const rows = await prisma.siteSetting.findMany({ orderBy: { key: 'asc' } })
+  return NextResponse.json({ settings: rows })
 }
 
 export async function PUT(request: Request) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const data = await request.json()
+  const body = await request.json()
+  const data: Record<string, unknown> = body?.settings ?? body ?? {}
+
   for (const [key, value] of Object.entries(data)) {
     await prisma.siteSetting.upsert({
       where: { key },

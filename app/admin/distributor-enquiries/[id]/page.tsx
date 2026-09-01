@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+const STATUSES = ['NEW', 'UNDER_REVIEW', 'CONTACTED', 'QUALIFIED', 'FOLLOW_UP', 'APPROVED', 'DECLINED', 'CLOSED']
+
 export default function AdminDistributorDetailPage() {
   const { id } = useParams()
   const router = useRouter()
@@ -32,26 +34,44 @@ export default function AdminDistributorDetailPage() {
     finally { setSaving(false) }
   }
 
+  const handleDelete = async () => {
+    if (!confirm('Delete this distributor enquiry permanently? This cannot be undone.')) return
+    await fetch(`/api/admin/distributor-enquiries/${id}`, { method: 'DELETE' })
+    router.push('/admin/distributor-enquiries')
+  }
+
   if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>
   if (!item) return <div className="text-gray-500 py-12 text-center">Not found</div>
+
+  const row = (label: string, value: any) =>
+    value ? <div><span className="text-gray-500">{label}:</span> <span className="font-medium">{Array.isArray(value) ? value.join(', ') : value}</span></div> : null
 
   return (
     <div className="max-w-3xl">
       <button onClick={() => router.push('/admin/distributor-enquiries')} className="text-sm text-gray-500 hover:text-gray-700 mb-4">← Back</button>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">{item.referenceNumber}</h1>
-      <p className="text-gray-500 text-sm mb-8">{item.companyName}</p>
+      <p className="text-gray-500 text-sm mb-8">{item.businessName} · Submitted {new Date(item.createdAt).toLocaleString('en-ZA')}</p>
 
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="font-semibold text-gray-900 mb-4">Details</h2>
         <div className="grid sm:grid-cols-2 gap-4 text-sm">
-          <div><span className="text-gray-500">Company:</span> <span className="font-medium">{item.companyName}</span></div>
-          <div><span className="text-gray-500">Contact:</span> <span className="font-medium">{item.contactName}</span></div>
-          <div><span className="text-gray-500">Email:</span> <span className="font-medium">{item.email}</span></div>
-          <div><span className="text-gray-500">Phone:</span> <span className="font-medium">{item.phone}</span></div>
-          <div><span className="text-gray-500">Region:</span> <span className="font-medium">{item.region || '—'}</span></div>
-          <div><span className="text-gray-500">Website:</span> <span className="font-medium">{item.website || '—'}</span></div>
+          {row('Business', item.businessName)}
+          {row('Contact', [item.firstName, item.lastName].filter(Boolean).join(' '))}
+          {row('Email', item.businessEmail)}
+          {row('Phone', item.phone)}
+          {row('WhatsApp', item.whatsapp)}
+          {row('Business type', item.businessType)}
+          {row('Registration no.', item.registrationNumber)}
+          {row('Website', item.website)}
+          {row('Social media', item.socialMediaUrl)}
+          {row('Location', [item.city, item.stateRegion, item.country].filter(Boolean).join(', '))}
+          {row('Address', item.businessAddress)}
+          {row('Years in business', item.yearsInBusiness)}
+          {row('Current brands', item.currentBrands)}
+          {row('Areas served', item.areasServed)}
+          {row('Monthly requirement', item.monthlyRequirement)}
+          {row('Interested products', item.interestedProducts)}
         </div>
-        {item.existingPortfolio && <div className="mt-4 text-sm"><span className="text-gray-500">Portfolio:</span> <p className="mt-1">{item.existingPortfolio}</p></div>}
         {item.message && <div className="mt-4 text-sm"><span className="text-gray-500">Message:</span> <p className="mt-1 whitespace-pre-wrap">{item.message}</p></div>}
       </div>
 
@@ -62,7 +82,7 @@ export default function AdminDistributorDetailPage() {
             {item.notes.map((n: any) => (
               <div key={n.id} className="bg-gray-50 rounded p-3">
                 <p className="text-sm">{n.content}</p>
-                <p className="text-xs text-gray-400 mt-1">{n.author} • {new Date(n.createdAt).toLocaleString('en-ZA')}</p>
+                <p className="text-xs text-gray-400 mt-1">{n.author?.name || 'Admin'} • {new Date(n.createdAt).toLocaleString('en-ZA')}</p>
               </div>
             ))}
           </div>
@@ -71,16 +91,14 @@ export default function AdminDistributorDetailPage() {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <select value={status} onChange={e => setStatus(e.target.value)} className="border border-gray-300 rounded px-3 py-2 text-sm bg-white">
-            <option value="NEW">New</option>
-            <option value="REVIEWING">Reviewing</option>
-            <option value="APPROVED">Approved</option>
-            <option value="REJECTED">Rejected</option>
+            {STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
           </select>
           <button onClick={handleSave} disabled={saving} className="bg-[#641B2A] text-white px-6 py-2.5 text-sm font-medium rounded hover:bg-[#7a2235] disabled:opacity-50">
             {saving ? 'Saving...' : 'Save'}
           </button>
+          <button onClick={handleDelete} className="ml-auto text-red-600 text-sm hover:underline">Delete</button>
         </div>
       </div>
     </div>

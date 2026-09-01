@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+const STATUSES = ['NEW', 'REVIEWING', 'CONTACTED', 'QUOTE_SENT', 'FOLLOW_UP', 'COMPLETED', 'CANCELLED', 'CLOSED']
+
 export default function AdminQuoteDetailPage() {
   const { id } = useParams()
   const router = useRouter()
@@ -12,12 +14,14 @@ export default function AdminQuoteDetailPage() {
   const [status, setStatus] = useState('')
   const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
+  const load = () => {
     fetch(`/api/admin/quotes/${id}`)
       .then(r => r.json())
       .then(d => { setQuote(d.quote); setStatus(d.quote?.status || ''); setLoading(false) })
       .catch(() => setLoading(false))
-  }, [id])
+  }
+
+  useEffect(() => { load() }, [id])
 
   const handleSave = async () => {
     setSaving(true)
@@ -28,12 +32,15 @@ export default function AdminQuoteDetailPage() {
         body: JSON.stringify({ status, note: newNote || undefined }),
       })
       setNewNote('')
-      const res = await fetch(`/api/admin/quotes/${id}`)
-      const d = await res.json()
-      setQuote(d.quote)
-      setStatus(d.quote?.status || '')
+      load()
     } catch {}
     finally { setSaving(false) }
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('Delete this quote request permanently? This cannot be undone.')) return
+    await fetch(`/api/admin/quotes/${id}`, { method: 'DELETE' })
+    router.push('/admin/quotes')
   }
 
   if (loading) return <div className="text-gray-500 py-12 text-center">Loading...</div>
@@ -50,21 +57,25 @@ export default function AdminQuoteDetailPage() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
-        {/* Customer Info */}
         <div className="md:col-span-2 space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Customer Details</h2>
             <div className="grid sm:grid-cols-2 gap-4 text-sm">
-              <div><span className="text-gray-500">Name:</span> <span className="font-medium">{quote.customerName}</span></div>
-              <div><span className="text-gray-500">Email:</span> <span className="font-medium">{quote.customerEmail}</span></div>
-              <div><span className="text-gray-500">Phone:</span> <span className="font-medium">{quote.customerPhone || '—'}</span></div>
-              <div><span className="text-gray-500">Company:</span> <span className="font-medium">{quote.companyName || '—'}</span></div>
+              <div><span className="text-gray-500">Name:</span> <span className="font-medium">{quote.fullName}</span></div>
+              <div><span className="text-gray-500">Email:</span> <span className="font-medium">{quote.email}</span></div>
+              <div><span className="text-gray-500">Phone:</span> <span className="font-medium">{quote.phone || '—'}</span></div>
+              <div><span className="text-gray-500">WhatsApp:</span> <span className="font-medium">{quote.whatsapp || '—'}</span></div>
+              <div><span className="text-gray-500">Preferred contact:</span> <span className="font-medium">{quote.preferredContact || '—'}</span></div>
+              <div><span className="text-gray-500">Location:</span> <span className="font-medium">{[quote.city, quote.state, quote.country].filter(Boolean).join(', ') || '—'}</span></div>
+              {quote.occasion && <div><span className="text-gray-500">Occasion:</span> <span className="font-medium">{quote.occasion}</span></div>}
+              {quote.requiredDate && <div><span className="text-gray-500">Required date:</span> <span className="font-medium">{quote.requiredDate}</span></div>}
             </div>
-            {quote.deliveryAddress && <div className="mt-4 text-sm"><span className="text-gray-500">Delivery:</span> <span className="font-medium">{quote.deliveryAddress}</span></div>}
-            {quote.message && <div className="mt-4 text-sm"><span className="text-gray-500">Message:</span><p className="mt-1 text-gray-700">{quote.message}</p></div>}
+            {(quote.fullAddress || quote.deliveryLocation) && (
+              <div className="mt-4 text-sm"><span className="text-gray-500">Delivery:</span> <span className="font-medium">{[quote.deliveryLocation, quote.fullAddress].filter(Boolean).join(' — ')}</span></div>
+            )}
+            {quote.message && <div className="mt-4 text-sm"><span className="text-gray-500">Message:</span><p className="mt-1 text-gray-700 whitespace-pre-wrap">{quote.message}</p></div>}
           </div>
 
-          {/* Items */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Requested Items</h2>
             <div className="space-y-3">
@@ -72,15 +83,15 @@ export default function AdminQuoteDetailPage() {
                 <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                   <div>
                     <p className="font-medium text-sm">{item.wineName}</p>
-                    <p className="text-xs text-gray-500">{item.wine?.varietal || ''}</p>
+                    <p className="text-xs text-gray-500">{item.bottleSize || ''}</p>
                   </div>
                   <span className="text-sm font-semibold text-[#641B2A]">Qty: {item.quantity}</span>
                 </div>
               ))}
+              {(!quote.items || quote.items.length === 0) && <p className="text-gray-400 text-sm">No items.</p>}
             </div>
           </div>
 
-          {/* Notes */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Internal Notes</h2>
             {quote.notes?.length > 0 ? (
@@ -88,7 +99,7 @@ export default function AdminQuoteDetailPage() {
                 {quote.notes.map((n: any) => (
                   <div key={n.id} className="bg-gray-50 rounded p-3">
                     <p className="text-sm text-gray-700">{n.content}</p>
-                    <p className="text-xs text-gray-400 mt-1">{n.author} • {new Date(n.createdAt).toLocaleString('en-ZA')}</p>
+                    <p className="text-xs text-gray-400 mt-1">{n.author?.name || 'Admin'} • {new Date(n.createdAt).toLocaleString('en-ZA')}</p>
                   </div>
                 ))}
               </div>
@@ -97,19 +108,16 @@ export default function AdminQuoteDetailPage() {
           </div>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="font-semibold text-gray-900 mb-4">Status</h2>
             <select value={status} onChange={e => setStatus(e.target.value)} className="w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white mb-4">
-              <option value="NEW">New</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="QUOTED">Quoted</option>
-              <option value="CLOSED">Closed</option>
+              {STATUSES.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
             </select>
             <button onClick={handleSave} disabled={saving} className="w-full bg-[#641B2A] text-white py-2.5 text-sm font-medium rounded hover:bg-[#7a2235] transition-colors disabled:opacity-50">
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
+            <button onClick={handleDelete} className="w-full mt-2 text-red-600 text-sm hover:underline">Delete request</button>
           </div>
         </div>
       </div>

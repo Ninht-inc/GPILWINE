@@ -15,11 +15,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
     include: { items: true, notes: { include: { author: { select: { name: true } } }, orderBy: { createdAt: 'desc' } } },
   })
   if (!quote) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  
+
   if (!quote.viewed) {
     await prisma.quote.update({ where: { id: params.id }, data: { viewed: true } })
   }
-  return NextResponse.json(quote)
+  return NextResponse.json({ quote })
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
@@ -27,19 +27,28 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const data = await request.json()
-  
+
   if (data.note) {
     await prisma.quoteNote.create({
       data: { quoteId: params.id, content: data.note, authorId: session.user.id },
     })
-    delete data.note
   }
-  
+
   if (data.status) {
-    const quote = await prisma.quote.update({ where: { id: params.id }, data: { status: data.status } })
+    await prisma.quote.update({ where: { id: params.id }, data: { status: data.status } })
     await createAuditLog({ adminId: session.user.id, action: 'STATUS_CHANGE', entity: 'Quote', entityId: params.id, details: `Status changed to ${data.status}` })
-    return NextResponse.json(quote)
   }
-  
+
+  return NextResponse.json({ success: true })
+}
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  await prisma.quoteNote.deleteMany({ where: { quoteId: params.id } })
+  await prisma.quoteItem.deleteMany({ where: { quoteId: params.id } })
+  await prisma.quote.delete({ where: { id: params.id } })
+  await createAuditLog({ adminId: session.user.id, action: 'DELETE', entity: 'Quote', entityId: params.id })
   return NextResponse.json({ success: true })
 }
