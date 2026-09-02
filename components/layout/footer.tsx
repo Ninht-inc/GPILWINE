@@ -131,7 +131,7 @@ export function Footer() {
       <div className="border-t border-[#C6A15B]/15">
         <GpilContainer size="lg">
           <div className="py-5 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-[#F4EBDD]/50">
-            <p>© 2025 GPIL Wines. All Rights Reserved.</p>
+            <p suppressHydrationWarning>© {new Date().getFullYear()} {s.site_name || 'GPIL Wines'}. All Rights Reserved.</p>
             <p className="italic">Drink Responsibly. Not for Sale to Persons Under the Age of 18.</p>
           </div>
         </GpilContainer>
