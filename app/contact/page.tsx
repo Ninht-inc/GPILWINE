@@ -16,7 +16,7 @@ export default function ContactPage() {
         eyebrow="GET IN TOUCH"
         title="Contact Us"
         description="Have a question about our wines, a business enquiry, or just want to say hello? We'd love to hear from you."
-        backgroundImage="https://gstatic1.promeai.pro/gallery/publish/2024/10/26/0919e06cb0fe4e518f508501c6c48845.jpg"
+        backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/contact"
       />
       <ContactClient />
     </PublicLayout>

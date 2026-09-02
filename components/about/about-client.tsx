@@ -29,7 +29,7 @@ export function AboutClient({ content }: { content: string }) {
             <motion.div {...fadeUp} transition={{ duration: 0.6, delay: 0.2 }}>
               <div className="relative aspect-[4/3] bg-[#3B101A]/5 rounded-sm overflow-hidden">
                 <Image
-                  src="https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=800&q=80"
+                  src="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/about-vineyard"
                   alt="South African vineyard landscape at sunset"
                   fill
                   className="object-cover"

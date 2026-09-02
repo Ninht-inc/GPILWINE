@@ -20,7 +20,7 @@ export default async function AboutPage() {
         eyebrow="OUR STORY"
         title="About GPIL Wines"
         description="Proudly South African. Passionately crafted. Made for every moment worth sharing."
-        backgroundImage="https://external-cdn.morphic.com/website-production/assets/seo/images/seo/16-07-c/wine-images/wine-images-16x9-04.webp"
+        backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/about"
       />
       <AboutClient content={content?.content || ''} />
     </PublicLayout>

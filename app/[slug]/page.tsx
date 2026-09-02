@@ -23,7 +23,7 @@ export default async function PolicyPage({ params }: { params: { slug: string } 
 
   return (
     <PublicLayout>
-      <PageHero title={content.title} backgroundImage="https://vivawalls.com/cdn/shop/files/Wallpaper_-1429A_1200x673.jpg?v=1743514005" />
+      <PageHero title={content.title} backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/policy-pages" />
       <section className="bg-[#FAF9F6] py-16 md:py-24">
         <GpilContainer size="md">
           <div className="prose prose-lg max-w-none text-[#222]/70

@@ -27,7 +27,7 @@ export default async function WinesPage() {
           description="From smooth, fruit-forward favourites to distinctive South African expressions, explore wines created for relaxed evenings, shared meals, celebrations and memorable occasions."
           ctaText="SELECT YOUR WINES"
           ctaHref="#collection"
-          backgroundImage="https://media.cntraveler.com/photos/57f7d0deeb5a99b96dc53cbe/16:9/w_1280,c_limit/GettyImages-56112948.jpg"
+          backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/wines"
         />
         <section id="collection" className="py-16 md:py-24 bg-[#FAF9F6]">
           <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">

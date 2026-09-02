@@ -16,7 +16,7 @@ export default function DistributorPage() {
         eyebrow="PARTNER WITH US"
         title="Become a Distributor"
         description="We're expanding our footprint across South Africa and beyond. If you're passionate about premium wines and have an established distribution network, we'd love to explore a partnership."
-        backgroundImage="https://www.virginwines.co.uk/hub/wp-content/uploads/2023/03/Wine-Basics-Topic-How-To-Pour-Wine-18.jpg"
+        backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/become-a-distributor"
       />
       <DistributorClient />
     </PublicLayout>

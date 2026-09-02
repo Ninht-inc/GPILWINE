@@ -22,7 +22,7 @@ export default async function FaqPage() {
         eyebrow="HELP & SUPPORT"
         title="Frequently Asked Questions"
         description="Find answers to common questions about our wines, ordering process, delivery, and more."
-        backgroundImage="https://images.pexels.com/photos/10923023/pexels-photo-10923023.jpeg?cs=srgb&dl=pexels-gonzalo-acuna-166058093-10923023.jpg&fm=jpg"
+        backgroundImage="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/heroes/faq"
       />
       <FaqClient faqs={faqs.map(f => ({ id: f.id, question: f.question, answer: f.answer, category: 'General' }))} />
     </PublicLayout>

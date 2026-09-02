@@ -48,7 +48,7 @@ export function FeaturedWine() {
           >
             <div className="relative w-full max-w-lg aspect-video">
               <Image
-                src="https://cdn.abacus.ai/images/3f3d29ac-adc1-45c2-815f-958c638403b3.png"
+                src="https://res.cloudinary.com/xgunwvcm/image/upload/f_auto,q_auto/gpil/home/featured-wine"
                 alt="GPIL Natural Sweet Red wine bottle with glass, grapes and berries"
                 fill
                 className="object-contain"
