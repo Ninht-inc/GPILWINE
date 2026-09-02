@@ -26,6 +26,7 @@ const navItems = [
   { label: 'Site Content', href: '/admin/site-content', icon: FileEdit },
   { label: 'Site Settings', href: '/admin/settings', icon: Settings },
   { label: 'Email Settings', href: '/admin/email-settings', icon: Mail },
+  { label: 'My Account', href: '/admin/account', icon: Users },
 ]
 
 export function AdminShell({ children, user }: { children: React.ReactNode; user: { name?: string | null; email: string; role: string } }) {
