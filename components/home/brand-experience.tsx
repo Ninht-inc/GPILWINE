@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import Link from 'next/link'
 import { GpilContainer } from '@/components/gpil-container'
 import { experienceValues } from '@/lib/data'
 
@@ -65,12 +66,12 @@ export function BrandExperience() {
             <p className="font-sans text-[#222222]/70 leading-relaxed mb-8">
               GPIL Wines brings together the rich winemaking heritage of South Africa and the vibrant spirit of modern Africa. Our carefully crafted wines are smooth, approachable and made to elevate the moments that matter most.
             </p>
-            <button
-              onClick={() => document.getElementById('wines')?.scrollIntoView?.({ behavior: 'smooth' })}
-              className="px-6 py-3 bg-[#641B2A] text-[#F4EBDD] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#3B101A] transition-colors duration-300"
+            <Link
+              href="/about"
+              className="inline-block px-6 py-3 bg-[#641B2A] text-[#F4EBDD] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#3B101A] transition-colors duration-300"
             >
               LEARN MORE ABOUT GPIL
-            </button>
+            </Link>
           </motion.div>
 
           {/* Right: Value Cards */}

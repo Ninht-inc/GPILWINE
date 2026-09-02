@@ -65,9 +65,11 @@ export function WineDetailClient({ wine, relatedWines }: { wine: WineData; relat
         <GpilContainer size="lg">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}
-              className="relative aspect-[3/4] max-w-[400px] mx-auto">
-              {wine.mainImage && (
-                <Image src={wine.mainImage} alt={wine.name} fill className="object-contain" unoptimized />
+              className="relative w-full aspect-[3/4] max-w-[400px] mx-auto">
+              {wine.mainImage ? (
+                <Image src={wine.mainImage} alt={wine.name} fill className="object-contain" sizes="(max-width: 1024px) 100vw, 400px" unoptimized />
+              ) : (
+                <div className="flex items-center justify-center h-full text-[#C6A15B]/30 font-display text-2xl">GPIL</div>
               )}
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }}>

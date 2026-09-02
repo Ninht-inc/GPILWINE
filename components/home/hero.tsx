@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { heroSlides, type HeroSlide } from '@/lib/data'
 
@@ -254,18 +255,18 @@ export function Hero() {
                   {slide.description}
                 </p>
                 <div className="flex flex-wrap gap-4">
-                  <button
-                    onClick={() => document.getElementById('wines')?.scrollIntoView?.({ behavior: 'smooth' })}
+                  <Link
+                    href="/wines"
                     className="group px-7 py-3.5 bg-[#C6A15B] text-[#1a0a10] text-xs tracking-[0.14em] font-sans font-bold rounded-sm hover:bg-[#D4B76A] transition-all duration-300 shadow-lg hover:shadow-xl hover:shadow-[#C6A15B]/20"
                   >
                     {slide.primaryCta}
-                  </button>
-                  <button
-                    onClick={() => document.getElementById('wines')?.scrollIntoView?.({ behavior: 'smooth' })}
+                  </Link>
+                  <Link
+                    href="/wines"
                     className="px-7 py-3.5 border-2 border-white/40 text-white text-xs tracking-[0.14em] font-sans font-bold rounded-sm hover:bg-white/10 hover:border-white/70 transition-all duration-300 backdrop-blur-sm"
                   >
                     {slide.secondaryCta}
-                  </button>
+                  </Link>
                 </div>
               </motion.div>
             </AnimatePresence>

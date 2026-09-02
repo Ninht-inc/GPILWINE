@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
+import Link from 'next/link'
 import { GpilContainer } from '@/components/gpil-container'
 
 export function DistributorCTA() {
@@ -32,12 +33,9 @@ export function DistributorCTA() {
             <p className="font-sans text-sm text-[#F4EBDD]/60 leading-relaxed mb-6">
               Interested in stocking or distributing GPIL Wines? Partner with us and grow your business with quality wines your customers will love.
             </p>
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView?.({ behavior: 'smooth' })}
-              className="px-6 py-3 border border-[#C6A15B] text-[#C6A15B] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#C6A15B] hover:text-[#3B101A] transition-all duration-300"
-            >
+            <Link href="/become-a-distributor" className="inline-block px-6 py-3 border border-[#C6A15B] text-[#C6A15B] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#C6A15B] hover:text-[#3B101A] transition-all duration-300">
               BECOME A DISTRIBUTOR
-            </button>
+            </Link>
           </motion.div>
 
           {/* Right: Stockist */}
@@ -63,12 +61,9 @@ export function DistributorCTA() {
             <p className="font-sans text-sm text-[#F4EBDD]/60 leading-relaxed mb-6">
               Looking for GPIL Wines? Contact us and we'll help you find your nearest available stockist.
             </p>
-            <button
-              onClick={() => document.getElementById('contact')?.scrollIntoView?.({ behavior: 'smooth' })}
-              className="px-6 py-3 border border-[#C6A15B] text-[#C6A15B] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#C6A15B] hover:text-[#3B101A] transition-all duration-300"
-            >
+            <Link href="/find-a-stockist" className="inline-block px-6 py-3 border border-[#C6A15B] text-[#C6A15B] text-xs tracking-[0.12em] font-sans font-semibold rounded hover:bg-[#C6A15B] hover:text-[#3B101A] transition-all duration-300">
               FIND A STOCKIST
-            </button>
+            </Link>
           </motion.div>
         </div>
       </GpilContainer>
