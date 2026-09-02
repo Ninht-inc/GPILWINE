@@ -4,7 +4,7 @@ import { v2 as cloudinary } from 'cloudinary'
  * Server-side Cloudinary client. Credentials come from env vars set in Vercel:
  *   CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET
  * The API secret is never sent to the browser — uploads go through
- * /api/admin/upload (auth-gated) or the one-time /api/admin/migrate-images.
+ * /api/admin/upload (auth-gated).
  */
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

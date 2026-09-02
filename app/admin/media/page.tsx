@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
 
 interface MediaItem {
@@ -62,7 +61,6 @@ export default function AdminMediaPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Media Library</h1>
         <div className="flex items-center gap-3">
-          <Link href="/admin/media/migrate" className="text-sm text-[#641B2A] hover:underline">Migrate existing images →</Link>
           <button onClick={() => inputRef.current?.click()} disabled={uploading}
             className="bg-[#641B2A] text-white px-4 py-2 text-sm font-medium rounded hover:bg-[#7a2235] disabled:opacity-50">
             {uploading ? 'Uploading…' : 'Upload images'}
