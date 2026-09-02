@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 export function FeaturedWine() {
   const { ref, inView } = useInView({ threshold: 0.15, triggerOnce: true })

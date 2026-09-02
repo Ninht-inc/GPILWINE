@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Plus, Minus, ShoppingBag, MessageSquare } from 'lucide-react'
 import { useWineSelection } from '@/lib/wine-selection'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 import { WineCard } from './wine-card'
 
 interface WineData {

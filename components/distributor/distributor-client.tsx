@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 const fadeUp = {
   initial: { opacity: 0, y: 30 },

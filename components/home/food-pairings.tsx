@@ -3,8 +3,8 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Image from 'next/image'
-import { GpilContainer } from '@/components/ui/gpil-container'
-import { SectionHeading } from '@/components/ui/section-heading'
+import { GpilContainer } from '@/components/gpil-container'
+import { SectionHeading } from '@/components/section-heading'
 import { foodPairings, type FoodPairing } from '@/lib/data'
 
 export function FoodPairings() {

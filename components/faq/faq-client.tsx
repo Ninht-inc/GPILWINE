@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 interface Faq { id: string; question: string; answer: string; category?: string }
 

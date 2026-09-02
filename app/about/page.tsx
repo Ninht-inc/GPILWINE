@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/db'
 import { PublicLayout } from '@/components/public-layout'
 import { PageHero } from '@/components/page-hero'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 import { AboutClient } from '@/components/about/about-client'
 
 export const metadata = {

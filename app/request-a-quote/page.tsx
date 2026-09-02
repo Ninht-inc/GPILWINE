@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 import { useWineSelection } from '@/lib/wine-selection'
 import { useRouter } from 'next/navigation'
 import { Plus, Minus, Trash2 } from 'lucide-react'

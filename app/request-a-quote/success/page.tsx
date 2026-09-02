@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Suspense } from 'react'

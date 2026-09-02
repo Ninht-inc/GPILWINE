@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 export function DistributorCTA() {
   const { ref, inView } = useInView({ threshold: 0.2, triggerOnce: true })

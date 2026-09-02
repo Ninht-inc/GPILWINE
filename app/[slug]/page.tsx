@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { PublicLayout } from '@/components/public-layout'
 import { PageHero } from '@/components/page-hero'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 const ALLOWED_SLUGS = ['privacy-policy', 'terms-and-conditions', 'delivery-policy', 'returns-policy', 'responsible-drinking']
 

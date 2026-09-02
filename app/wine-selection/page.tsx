@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 import { useWineSelection } from '@/lib/wine-selection'
 import { Plus, Minus, Trash2, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'

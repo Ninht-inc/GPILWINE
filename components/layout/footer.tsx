@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { GpilContainer } from '@/components/ui/gpil-container'
+import { GpilContainer } from '@/components/gpil-container'
 
 const exploreLinks = [
   { label: 'Our Wines', href: '/wines' },
