@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Link from 'next/link'
+import { Store, MapPin } from 'lucide-react'
 import { GpilContainer } from '@/components/gpil-container'
 
 export function DistributorCTA() {
@@ -21,10 +22,7 @@ export function DistributorCTA() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full border border-[#C6A15B]/40 flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#C6A15B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
-                  <path d="M16 7V5a4 4 0 00-8 0v2" />
-                </svg>
+                <Store className="w-6 h-6 text-[#C6A15B]" strokeWidth={1.75} />
               </div>
             </div>
             <h3 className="font-display text-2xl md:text-3xl text-[#F4EBDD] mb-3">
@@ -48,11 +46,7 @@ export function DistributorCTA() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full border border-[#C6A15B]/40 flex items-center justify-center">
-                <svg className="w-6 h-6 text-[#C6A15B]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="12" cy="10" r="8" />
-                  <circle cx="12" cy="10" r="3" />
-                  <path d="M12 18v4" />
-                </svg>
+                <MapPin className="w-6 h-6 text-[#C6A15B]" strokeWidth={1.75} />
               </div>
             </div>
             <h3 className="font-display text-2xl md:text-3xl text-[#F4EBDD] mb-3">
