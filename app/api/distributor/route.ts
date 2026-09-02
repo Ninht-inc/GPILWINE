@@ -50,7 +50,6 @@ export async function POST(request: Request) {
       <p>Warm regards,<br/><strong>GPIL Wines</strong></p>
     `)
     const custResult = await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_DISTRIBUTOR_ENQUIRY_APPLICANT_CONFIRMATION || '',
       recipientEmail: data.businessEmail,
       subject: `Your GPIL Wines Partnership Enquiry Has Been Received`,
       body: custBody,
@@ -69,7 +68,6 @@ export async function POST(request: Request) {
       ${data.message ? `<div style="background:#f5f0e8;padding:16px;border-radius:8px;margin-top:12px;"><p style="margin:0;">${data.message}</p></div>` : ''}
     `)
     const adminResult = await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_DISTRIBUTOR_ENQUIRY_ADMIN || '',
       recipientEmail: process.env.DEFAULT_ADMIN_NOTIFICATION_EMAIL || 'ninht.inc@gmail.com',
       subject: `New Distributor Enquiry — ${referenceNumber} — ${data.businessName}`,
       body: adminBody,

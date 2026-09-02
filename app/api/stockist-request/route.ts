@@ -40,7 +40,6 @@ export async function POST(request: Request) {
       <p>Warm regards,<br/><strong>GPIL Wines</strong></p>
     `)
     await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_STOCKIST_REQUEST_CUSTOMER_CONFIRMATION || '',
       recipientEmail: data.email,
       subject: `We're Helping You Find GPIL Wines — ${referenceNumber}`,
       body: custBody,
@@ -57,7 +56,6 @@ export async function POST(request: Request) {
       ${data.message ? `<p><strong>Message:</strong> ${data.message}</p>` : ''}
     `)
     await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_STOCKIST_REQUEST_ADMIN || '',
       recipientEmail: process.env.DEFAULT_ADMIN_NOTIFICATION_EMAIL || 'ninht.inc@gmail.com',
       subject: `Stockist Request — ${referenceNumber} — ${data.fullName}`,
       body: adminBody,

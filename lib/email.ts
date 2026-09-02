@@ -1,80 +1,27 @@
 import { getSmtpConfig, isSmtpUsable, sendMail } from '@/lib/mailer'
 
 /**
- * Sends a transactional email.
- *
- * Delivery order:
- *   1. cPanel / webmail SMTP  — when configured in /admin/email-settings (or via SMTP_* env vars)
- *   2. Abacus.AI notifications — legacy fallback, used only while SMTP is not set up
- *
- * The signature is unchanged so the form routes (contact, quotes, distributor,
- * stockist-request) don't need to know which transport ran.
+ * Sends a transactional email over cPanel / webmail SMTP.
+ * Configure the connection in the admin panel at /admin/email-settings
+ * (or via SMTP_* env vars).
  */
 export async function sendNotificationEmail({
-  notificationId,
   recipientEmail,
   subject,
   body,
   replyTo,
-  senderAlias = 'GPIL Wines',
 }: {
-  notificationId: string
   recipientEmail: string
   subject: string
   body: string
   replyTo?: string
-  senderAlias?: string
 }): Promise<{ success: boolean; error?: string }> {
-  // --- 1. SMTP -------------------------------------------------------------
   const smtp = await getSmtpConfig()
-  if (isSmtpUsable(smtp)) {
-    const result = await sendMail(
-      { to: recipientEmail, subject, html: body, replyTo },
-      smtp
-    )
-    if (result.success) return { success: true }
-    // fall through to the legacy transport if SMTP send failed
-    console.error('SMTP send failed, falling back to Abacus:', result.error)
+  if (!isSmtpUsable(smtp)) {
+    return { success: false, error: 'Email is not configured — set up SMTP in Email Settings' }
   }
-
-  // --- 2. Abacus.AI (legacy) --------------------------------------------------
-  const appUrl = process.env.NEXTAUTH_URL || ''
-  let senderEmail = 'noreply@mail.abacusai.app'
-  try {
-    senderEmail = `noreply@${new URL(appUrl).hostname}`
-  } catch {}
-
-  if (!process.env.ABACUSAI_API_KEY) {
-    return { success: false, error: 'No email transport configured (set up SMTP in Email Settings)' }
-  }
-
-  try {
-    const response = await fetch('https://apps.abacus.ai/api/sendNotificationEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.ABACUSAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        app_id: process.env.WEB_APP_ID,
-        notification_id: notificationId,
-        subject,
-        body,
-        is_html: true,
-        recipient_email: recipientEmail,
-        reply_to: replyTo,
-        sender_email: senderEmail,
-        sender_alias: senderAlias,
-      }),
-    })
-    const result = await response.json()
-    if (!result.success && !result.notification_disabled) {
-      return { success: false, error: result.message || 'Email send failed' }
-    }
-    return { success: true }
-  } catch (error) {
-    return { success: false, error: String(error) }
-  }
+  const result = await sendMail({ to: recipientEmail, subject, html: body, replyTo }, smtp)
+  return result.success ? { success: true } : { success: false, error: result.error }
 }
 
 export function gpilEmailTemplate(content: string) {

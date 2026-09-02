@@ -72,7 +72,6 @@ export async function POST(request: Request) {
     `)
 
     const custResult = await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_QUOTE_REQUEST_CUSTOMER_CONFIRMATION || '',
       recipientEmail: data.email,
       subject: `We've Received Your GPIL Wines Enquiry — ${referenceNumber}`,
       body: customerBody,
@@ -107,7 +106,6 @@ export async function POST(request: Request) {
     `)
 
     const adminResult = await sendNotificationEmail({
-      notificationId: process.env.NOTIF_ID_QUOTE_REQUEST_ADMIN || '',
       recipientEmail: process.env.DEFAULT_ADMIN_NOTIFICATION_EMAIL || 'ninht.inc@gmail.com',
       subject: `New Quote Request — ${referenceNumber} — ${data.fullName}`,
       body: adminBody,

@@ -4,18 +4,24 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
-  // Hidden test account
-  const testHash = await bcrypt.hash('Cys97*h7DE', 12)
-  await prisma.user.upsert({
-    where: { email: 'abacus-1e0e6401@example.com' },
-    update: { password: testHash },
-    create: {
-      email: 'abacus-1e0e6401@example.com',
-      password: testHash,
-      name: 'System Admin',
-      role: 'SUPER_ADMIN',
-    },
-  })
+  // Bootstrap admin — only created if it doesn't already exist. Override the
+  // credentials with SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD.
+  const adminEmail = process.env.SEED_ADMIN_EMAIL
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD
+  if (adminEmail && adminPassword) {
+    const existing = await prisma.user.findUnique({ where: { email: adminEmail } })
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email: adminEmail,
+          password: await bcrypt.hash(adminPassword, 12),
+          name: 'Admin',
+          role: 'SUPER_ADMIN',
+        },
+      })
+      console.log(`Created admin ${adminEmail}`)
+    }
+  }
 
   // GPIL Natural Sweet Red
   await prisma.wine.upsert({
