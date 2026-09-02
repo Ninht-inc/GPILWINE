@@ -9,6 +9,7 @@ import { CookieConsent } from '@/components/cookie-consent'
 import { SiteSettingsProvider } from '@/components/site-settings-provider'
 import { Analytics } from '@/components/analytics'
 import { WhatsAppButton } from '@/components/whatsapp-button'
+import { BackToTop } from '@/components/back-to-top'
 import { getPublicSettings } from '@/lib/settings'
 
 export const dynamic = 'force-dynamic'
@@ -61,6 +62,7 @@ export default async function RootLayout({
               {children}
               <CookieConsent />
               <WhatsAppButton />
+              <BackToTop />
             </WineSelectionProvider>
           </Providers>
           <Analytics />
