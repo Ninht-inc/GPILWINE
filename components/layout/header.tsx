@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
 import { useWineSelection } from '@/lib/wine-selection'
+import { SiteLogo } from '@/components/site-logo'
 
 const navItems = [
   { label: 'HOME', href: '/' },
@@ -58,12 +59,7 @@ export function Header() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <div className="flex flex-col items-center leading-none">
-              <span className="font-display text-[#C6A15B] text-xl md:text-2xl font-bold tracking-wider">GPIL</span>
-              <span className="font-sans text-[#C6A15B]/80 text-[9px] md:text-[10px] tracking-[0.25em] uppercase">Wines</span>
-            </div>
-          </Link>
+          <SiteLogo variant="header" />
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">

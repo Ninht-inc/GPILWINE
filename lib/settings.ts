@@ -3,6 +3,34 @@ import { prisma } from '@/lib/db'
 const settingsCache: Record<string, { value: string; timestamp: number }> = {}
 const CACHE_TTL = 60000 // 1 minute
 
+/** Settings that are safe to expose to the public site. */
+export const PUBLIC_SETTING_KEYS = [
+  'site_name',
+  'site_logo',
+  'site_favicon',
+  'whatsapp_number',
+  'whatsapp_message',
+  'ga_measurement_id',
+  'social_facebook',
+  'social_instagram',
+  'social_twitter',
+  'social_youtube',
+] as const
+
+export type PublicSettings = Record<(typeof PUBLIC_SETTING_KEYS)[number], string>
+
+export async function getPublicSettings(): Promise<PublicSettings> {
+  const out = {} as PublicSettings
+  for (const key of PUBLIC_SETTING_KEYS) out[key] = ''
+  try {
+    const values = await getSettings([...PUBLIC_SETTING_KEYS])
+    for (const key of PUBLIC_SETTING_KEYS) out[key] = values[key] ?? ''
+  } catch {
+    // DB unavailable (e.g. during build) — return empty settings
+  }
+  return out
+}
+
 export async function getSetting(key: string): Promise<string | null> {
   const cached = settingsCache[key]
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
