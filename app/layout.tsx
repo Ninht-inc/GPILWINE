@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Montserrat } from 'next/font/google'
+import { Plus_Jakarta_Sans, Montserrat } from 'next/font/google'
 import './globals.css'
 import { ChunkLoadErrorHandler } from '@/components/chunk-load-error-handler'
 import { Providers } from '@/components/providers'
@@ -13,7 +13,7 @@ import { getPublicSettings } from '@/lib/settings'
 
 export const dynamic = 'force-dynamic'
 
-const playfair = Playfair_Display({
+const displayFont = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-display',
   display: 'swap',
@@ -53,7 +53,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${playfair.variable} ${montserrat.variable} font-sans bg-[#FAF9F6] text-[#222222]`}>
+      <body className={`${displayFont.variable} ${montserrat.variable} font-sans bg-[#FAF9F6] text-[#222222]`}>
         <SiteSettingsProvider settings={settings}>
           <Providers>
             <WineSelectionProvider>

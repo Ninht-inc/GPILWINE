@@ -28,7 +28,7 @@ export function gpilEmailTemplate(content: string) {
   return `
     <div style="font-family: 'Montserrat', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF9F6;">
       <div style="background: #3B101A; padding: 24px 32px; text-align: center;">
-        <h1 style="margin: 0; color: #C6A15B; font-family: 'Playfair Display', Georgia, serif; font-size: 24px; letter-spacing: 2px;">GPIL</h1>
+        <h1 style="margin: 0; color: #C6A15B; font-family: 'Plus Jakarta Sans', 'Montserrat', Arial, sans-serif; font-size: 24px; letter-spacing: 2px;">GPIL</h1>
         <p style="margin: 2px 0 0 0; color: #C6A15B; opacity: 0.8; font-size: 10px; letter-spacing: 3px; text-transform: uppercase;">Wines</p>
       </div>
       <div style="padding: 32px; color: #222222; line-height: 1.6;">
