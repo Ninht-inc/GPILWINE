@@ -1,6 +1,14 @@
 import { getSmtpConfig, isSmtpUsable, sendMail } from '@/lib/mailer'
 
 /**
+ * Where new form submissions are emailed. Reads the "Admin notification
+ * recipient" set in /admin/email-settings, falling back to env / a default.
+ */
+export async function getAdminNotificationEmail(): Promise<string> {
+  return (await getSmtpConfig()).adminRecipient
+}
+
+/**
  * Sends a transactional email over cPanel / webmail SMTP.
  * Configure the connection in the admin panel at /admin/email-settings
  * (or via SMTP_* env vars).

@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { generateReferenceNumber } from '@/lib/reference-number'
-import { sendNotificationEmail, gpilEmailTemplate } from '@/lib/email'
+import { sendNotificationEmail, gpilEmailTemplate, getAdminNotificationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       ${data.message ? `<div style="background:#f5f0e8;padding:16px;border-radius:8px;margin-top:12px;"><p style="margin:0;">${data.message}</p></div>` : ''}
     `)
     const adminResult = await sendNotificationEmail({
-      recipientEmail: process.env.DEFAULT_ADMIN_NOTIFICATION_EMAIL || 'ninht.inc@gmail.com',
+      recipientEmail: await getAdminNotificationEmail(),
       subject: `New Distributor Enquiry — ${referenceNumber} — ${data.businessName}`,
       body: adminBody,
       replyTo: data.businessEmail,
