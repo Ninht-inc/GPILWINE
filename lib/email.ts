@@ -1,17 +1,46 @@
-import { getSmtpConfig, isSmtpUsable, sendMail } from '@/lib/mailer'
+import { Resend } from 'resend'
+import { prisma } from '@/lib/db'
+
+/**
+ * Transactional email via the Resend API (https://resend.com).
+ *
+ * Vercel's serverless runtime blocks outbound SMTP, so all site email — form
+ * confirmations, admin notifications, user invites and password resets — goes
+ * out through Resend's HTTPS API instead.
+ *
+ * Requires RESEND_API_KEY in the environment. The sending domain (gpilwine.com)
+ * must be verified in the Resend dashboard.
+ */
+
+const FROM = process.env.RESEND_FROM || 'GPIL WINE <admin@gpilwine.com>'
+
+let client: Resend | null = null
+function resend(): Resend | null {
+  if (!process.env.RESEND_API_KEY) return null
+  if (!client) client = new Resend(process.env.RESEND_API_KEY)
+  return client
+}
 
 /**
  * Where new form submissions are emailed. Reads the "Admin notification
  * recipient" set in /admin/email-settings, falling back to env / a default.
  */
 export async function getAdminNotificationEmail(): Promise<string> {
-  return (await getSmtpConfig()).adminRecipient
+  try {
+    const row = await prisma.siteSetting.findUnique({ where: { key: 'mail_admin_recipient' } })
+    const v = row?.value?.trim()
+    if (v) return v
+  } catch {
+    // DB unreachable — fall through to env / default
+  }
+  return process.env.DEFAULT_ADMIN_NOTIFICATION_EMAIL || 'admin@gpilwine.com'
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
 /**
- * Sends a transactional email over cPanel / webmail SMTP.
- * Configure the connection in the admin panel at /admin/email-settings
- * (or via SMTP_* env vars).
+ * Sends one transactional email. Returns { success, error } — never throws, so
+ * a form submission is still recorded even when email delivery fails.
  */
 export async function sendNotificationEmail({
   recipientEmail,
@@ -24,12 +53,47 @@ export async function sendNotificationEmail({
   body: string
   replyTo?: string
 }): Promise<{ success: boolean; error?: string }> {
-  const smtp = await getSmtpConfig()
-  if (!isSmtpUsable(smtp)) {
-    return { success: false, error: 'Email is not configured — set up SMTP in Email Settings' }
+  const r = resend()
+  if (!r) {
+    console.error('[email] RESEND_API_KEY is not set — cannot send', { to: recipientEmail, subject })
+    return { success: false, error: 'Email is not configured (RESEND_API_KEY missing)' }
   }
-  const result = await sendMail({ to: recipientEmail, subject, html: body, replyTo }, smtp)
-  return result.success ? { success: true } : { success: false, error: result.error }
+
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const { data, error } = await r.emails.send({
+        from: FROM,
+        to: recipientEmail,
+        subject,
+        html: body,
+        replyTo,
+      })
+
+      if (error) {
+        const status = (error as { statusCode?: number }).statusCode
+        // Resend free tier ~2 req/s; forms send two emails back to back.
+        if (status === 429 && attempt === 1) {
+          await sleep(1200)
+          continue
+        }
+        console.error('[email] Resend returned an error', { to: recipientEmail, subject, error })
+        return { success: false, error: error.message || 'Resend send failed' }
+      }
+
+      console.log('[email] sent', { id: data?.id, to: recipientEmail, subject })
+      return { success: true }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      if (attempt === 1) {
+        await sleep(800)
+        continue
+      }
+      console.error('[email] Resend request threw', { to: recipientEmail, subject, message })
+      return { success: false, error: message }
+    }
+  }
+
+  return { success: false, error: 'Email send failed after retry' }
 }
 
 export function gpilEmailTemplate(content: string) {
