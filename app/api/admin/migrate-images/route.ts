@@ -10,6 +10,7 @@ import { isConfigured, isCloudinaryUrl, uploadToCloudinary } from '@/lib/cloudin
 import { STATIC_IMAGE_MANIFEST } from '@/lib/image-manifest'
 
 const BATCH = 5
+const DONE_KEY = 'cloudinary_migrated_static'
 
 const WINE_IMAGE_FIELDS = ['mainImage', 'transparentImage', 'heroImage', 'cardImage', 'ogImage'] as const
 
@@ -17,12 +18,34 @@ type PendingItem =
   | { kind: 'wine'; wineId: string; slug: string; field: string; index?: number; url: string }
   | { kind: 'static'; publicId: string; url: string }
 
+async function getDoneStatic(): Promise<Set<string>> {
+  const row = await prisma.siteSetting.findUnique({ where: { key: DONE_KEY } })
+  if (!row) return new Set()
+  try {
+    return new Set(JSON.parse(row.value) as string[])
+  } catch {
+    return new Set()
+  }
+}
+
+async function markStaticDone(publicIds: string[]) {
+  if (!publicIds.length) return
+  const done = await getDoneStatic()
+  publicIds.forEach((id) => done.add(id))
+  await prisma.siteSetting.upsert({
+    where: { key: DONE_KEY },
+    update: { value: JSON.stringify([...done]) },
+    create: { key: DONE_KEY, value: JSON.stringify([...done]) },
+  })
+}
+
 async function collectPending(target: string): Promise<PendingItem[]> {
   const items: PendingItem[] = []
 
   if (target === 'static' || target === 'all') {
+    const done = await getDoneStatic()
     for (const m of STATIC_IMAGE_MANIFEST) {
-      items.push({ kind: 'static', publicId: m.publicId, url: m.source })
+      if (!done.has(m.publicId)) items.push({ kind: 'static', publicId: m.publicId, url: m.source })
     }
   }
 
@@ -62,8 +85,8 @@ export async function POST(request: Request) {
 
   const migrated: { from: string; to: string; where: string }[] = []
   const failures: { url: string; where: string; error: string }[] = []
+  const staticDone: string[] = []
 
-  // group wine updates so we write each row once
   const winePatches: Record<string, { slug: string; scalars: Record<string, string>; gallery?: { index: number; url: string }[] }> = {}
 
   for (const item of batch) {
@@ -81,6 +104,7 @@ export async function POST(request: Request) {
       })
 
       if (item.kind === 'static') {
+        staticDone.push(item.publicId)
         migrated.push({ from: item.url, to: res.url, where: item.publicId })
       } else {
         const patch = (winePatches[item.wineId] ??= { slug: item.slug, scalars: {} })
@@ -100,7 +124,6 @@ export async function POST(request: Request) {
     }
   }
 
-  // apply wine row updates
   for (const [wineId, patch] of Object.entries(winePatches)) {
     const data: Record<string, unknown> = { ...patch.scalars }
     if (patch.gallery?.length) {
@@ -114,6 +137,8 @@ export async function POST(request: Request) {
     }
   }
 
+  await markStaticDone(staticDone)
+
   if (migrated.length) {
     await createAuditLog({
       adminId: session.user.id,
@@ -123,14 +148,13 @@ export async function POST(request: Request) {
     })
   }
 
-  const remaining = Math.max(0, pending.length - batch.length)
+  const remaining = await collectPending(target)
   return NextResponse.json({
-    done: remaining === 0,
+    done: remaining.length === 0,
     processed: batch.length,
     migrated,
     failures,
-    remaining,
-    total: pending.length,
+    remaining: remaining.length,
   })
 }
 

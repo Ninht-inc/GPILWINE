@@ -8,7 +8,7 @@ export default function MigrateImagesPage() {
   const [status, setStatus] = useState<{ configured: boolean; pending: number; breakdown: { static: number; wines: number } } | null>(null)
   const [running, setRunning] = useState(false)
   const [done, setDone] = useState(false)
-  const [progress, setProgress] = useState({ processed: 0, total: 0 })
+  const [progress, setProgress] = useState({ processed: 0, remaining: 0 })
   const [migrated, setMigrated] = useState<Line[]>([])
   const [failures, setFailures] = useState<Line[]>([])
 
@@ -22,21 +22,22 @@ export default function MigrateImagesPage() {
 
   const run = async () => {
     setRunning(true); setDone(false); setMigrated([]); setFailures([])
-    let total = 0, processed = 0
+    let processed = 0
+    let consecutiveNoProgress = 0
     try {
-      // loop until the endpoint reports done
-      // (each call handles a small batch so it never times out)
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
+      // Each call handles a small batch so it never times out. Stop when the
+      // server reports nothing left, or when two calls in a row make no progress.
+      for (let i = 0; i < 60; i++) {
         const res = await fetch('/api/admin/migrate-images?target=all', { method: 'POST' })
         const d = await res.json()
         if (!res.ok) { setFailures(f => [...f, { from: '', where: 'request', error: d.error || 'failed' }]); break }
-        total = d.total
-        processed += d.processed
-        setProgress({ processed, total })
+        processed += d.processed || 0
+        setProgress({ processed, remaining: d.remaining ?? 0 })
         setMigrated(m => [...m, ...(d.migrated || [])])
         setFailures(f => [...f, ...(d.failures || [])])
         if (d.done || d.processed === 0) break
+        if (!d.migrated?.length) { consecutiveNoProgress++; if (consecutiveNoProgress >= 2) break }
+        else consecutiveNoProgress = 0
       }
       setDone(true)
     } finally {
@@ -78,7 +79,7 @@ export default function MigrateImagesPage() {
             disabled={running || !status?.configured || status?.pending === 0}
             className="bg-[#641B2A] text-white px-5 py-2.5 text-sm font-medium rounded hover:bg-[#7a2235] disabled:opacity-50"
           >
-            {running ? `Migrating… ${progress.processed}/${progress.total}` : status?.pending === 0 ? 'Nothing to migrate' : 'Run migration'}
+            {running ? `Migrating… ${progress.processed} done, ${progress.remaining} left` : status?.pending === 0 ? 'Nothing to migrate' : 'Run migration'}
           </button>
         </div>
       </div>
