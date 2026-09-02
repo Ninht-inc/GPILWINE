@@ -113,7 +113,7 @@ export function Footer() {
               <h4 className="font-sans text-xs tracking-[0.15em] uppercase text-[#C6A15B] mb-4 font-semibold">Contact Us</h4>
               <div className="space-y-3 text-sm text-[#F4EBDD]/70">
                 <p suppressHydrationWarning>+234 000 000 0000</p>
-                <p suppressHydrationWarning>info@gpilwines.com</p>
+                <p><a href="mailto:info@gpilwine.com" className="hover:text-[#C6A15B] transition-colors">info@gpilwine.com</a></p>
                 <p className="leading-relaxed">Global Partners Investment Limited<br />Lagos, Nigeria</p>
                 <Link
                   href="/contact"

@@ -67,7 +67,7 @@ export function ContactClient() {
             <div>
               <h3 className="font-display text-[#222] text-xl font-bold mb-3">General Enquiries</h3>
               <p className="text-[#222]/60 text-sm leading-relaxed mb-2">For questions about our wines, stockist locations, or anything else:</p>
-              <p className="text-[#641B2A] font-medium"><span suppressHydrationWarning>info@gpilwines.co.za</span></p>
+              <p className="text-[#641B2A] font-medium"><a href="mailto:info@gpilwine.com" className="hover:underline">info@gpilwine.com</a></p>
             </div>
             <div>
               <h3 className="font-display text-[#222] text-xl font-bold mb-3">Business &amp; Distribution</h3>
