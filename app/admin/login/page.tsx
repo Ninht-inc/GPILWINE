@@ -2,14 +2,12 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,13 +18,16 @@ export default function AdminLogin() {
         email, password, redirect: false,
       })
       if (result?.ok) {
-        router.replace('/admin/dashboard')
+        // Full navigation so the /admin server layout re-renders with the new
+        // session and shows the sidebar (a soft router push keeps the cached
+        // shell-less layout until a manual refresh).
+        window.location.assign('/admin/dashboard')
       } else {
         setError('Invalid email or password')
+        setLoading(false)
       }
     } catch {
       setError('An error occurred. Please try again.')
-    } finally {
       setLoading(false)
     }
   }
