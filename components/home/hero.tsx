@@ -278,25 +278,26 @@ export function Hero() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.6, ease: 'easeInOut' }}
-                className="hidden lg:flex items-end justify-center relative h-[550px]"
+                className="pointer-events-none absolute right-1 bottom-0 z-[1] flex items-end justify-center
+                           lg:pointer-events-auto lg:relative lg:right-auto lg:bottom-auto lg:z-auto lg:h-[550px]"
               >
                 <div
-                  className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full blur-[80px] opacity-30"
+                  className="hidden lg:block absolute bottom-10 left-1/2 -translate-x-1/2 w-[300px] h-[300px] rounded-full blur-[80px] opacity-30"
                   style={{ backgroundColor: slide.accentColor }}
                 />
                 <motion.div
                   animate={{ y: [0, -12, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative w-[260px] h-[520px] z-10"
+                  className="relative w-[120px] h-[300px] opacity-90 sm:w-[160px] sm:h-[380px] lg:w-[260px] lg:h-[520px] lg:opacity-100 z-10"
                 >
                   <Image
                     src={slide.bottleImage}
                     alt={`${slide.productName} wine bottle`}
                     fill
-                    className="object-contain"
+                    className="object-contain object-bottom"
                     style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.5))' }}
                     priority={current === 0}
-                    sizes="260px"
+                    sizes="(max-width: 1024px) 160px, 260px"
                   />
                 </motion.div>
               </motion.div>
