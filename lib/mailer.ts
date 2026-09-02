@@ -43,9 +43,9 @@ export async function getSmtpConfig(): Promise<SmtpConfig> {
     (settings[dbKey] ?? process.env[envKey] ?? fallback).trim()
 
   const port = Number(pick('smtp_port', 'SMTP_PORT', '465')) || 465
-  // If the admin explicitly set the flag use it, otherwise infer from the port.
-  const secureRaw = settings['smtp_secure'] ?? process.env.SMTP_SECURE
-  const secure = secureRaw != null ? secureRaw === 'true' : port === 465
+  // Port 465 is implicit TLS (SMTPS); 587/25 use STARTTLS. This is fixed by
+  // the port itself — no reason to let it be misconfigured separately.
+  const secure = port === 465
 
   const host = pick('smtp_host', 'SMTP_HOST')
   const user = pick('smtp_user', 'SMTP_USER')
@@ -74,7 +74,12 @@ function buildTransport(cfg: SmtpConfig): Transporter {
     host: cfg.host,
     port: cfg.port,
     secure: cfg.secure,
+    requireTLS: !cfg.secure, // enforce STARTTLS on 587/25
     auth: { user: cfg.user, pass: cfg.password },
+    connectionTimeout: 20000,
+    greetingTimeout: 20000,
+    socketTimeout: 25000,
+    tls: { minVersion: 'TLSv1.2' },
   })
 }
 
