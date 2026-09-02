@@ -1,16 +1,16 @@
 export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { guard, SUPER_ONLY } from '@/lib/rbac'
 import { prisma } from '@/lib/db'
 import bcrypt from 'bcryptjs'
 import { createAuditLog } from '@/lib/audit'
 
 /** Create an admin user. Requires an existing signed-in admin. */
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const gate = await guard(SUPER_ONLY)
+  if ('error' in gate) return gate.error
+  const session = gate.session as any
 
   try {
     const { email, password, name, role } = await request.json()

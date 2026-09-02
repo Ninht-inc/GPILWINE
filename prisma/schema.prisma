@@ -26,6 +26,22 @@ model User {
   quoteNotes    QuoteNote[]
   enquiryNotes  EnquiryNote[]
   distributorNotes DistributorNote[]
+  authTokens    AuthToken[]
+}
+
+/// One-time tokens for user invitations and password resets.
+model AuthToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  purpose   String   @default("invite") // "invite" | "reset"
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum WineStatus {

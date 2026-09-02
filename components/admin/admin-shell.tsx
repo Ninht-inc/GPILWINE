@@ -7,26 +7,32 @@ import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Wine, FileText, Users, MapPin, Image as ImageIcon,
   Settings, Mail, FileEdit, Menu, X, LogOut, ChevronDown, ChevronRight,
-  MessageSquare, Building2, Bell,
+  MessageSquare, UserCog,
 } from 'lucide-react'
 
+const ALL = ['SUPER_ADMIN', 'CONTENT_ADMIN', 'ENQUIRY_MANAGER']
+const CONTENT = ['SUPER_ADMIN', 'CONTENT_ADMIN']
+const ENQUIRY = ['SUPER_ADMIN', 'ENQUIRY_MANAGER']
+const SUPER = ['SUPER_ADMIN']
+
 const navItems = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-  { label: 'Wines', href: '/admin/wines', icon: Wine },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, roles: ALL },
+  { label: 'Wines', href: '/admin/wines', icon: Wine, roles: CONTENT },
   {
-    label: 'Enquiries', icon: MessageSquare, children: [
+    label: 'Enquiries', icon: MessageSquare, roles: ENQUIRY, children: [
       { label: 'Quote Requests', href: '/admin/quotes' },
       { label: 'General Enquiries', href: '/admin/enquiries' },
       { label: 'Distributor Enquiries', href: '/admin/distributor-enquiries' },
     ]
   },
-  { label: 'Stockists', href: '/admin/stockists', icon: MapPin },
-  { label: 'Media Library', href: '/admin/media', icon: ImageIcon },
-  { label: 'FAQs', href: '/admin/faqs', icon: FileText },
-  { label: 'Site Content', href: '/admin/site-content', icon: FileEdit },
-  { label: 'Site Settings', href: '/admin/settings', icon: Settings },
-  { label: 'Email Settings', href: '/admin/email-settings', icon: Mail },
-  { label: 'My Account', href: '/admin/account', icon: Users },
+  { label: 'Stockists', href: '/admin/stockists', icon: MapPin, roles: ENQUIRY },
+  { label: 'Media Library', href: '/admin/media', icon: ImageIcon, roles: CONTENT },
+  { label: 'FAQs', href: '/admin/faqs', icon: FileText, roles: CONTENT },
+  { label: 'Site Content', href: '/admin/site-content', icon: FileEdit, roles: CONTENT },
+  { label: 'Site Settings', href: '/admin/settings', icon: Settings, roles: SUPER },
+  { label: 'Email Settings', href: '/admin/email-settings', icon: Mail, roles: SUPER },
+  { label: 'Users', href: '/admin/users', icon: UserCog, roles: SUPER },
+  { label: 'My Account', href: '/admin/account', icon: Users, roles: ALL },
 ]
 
 export function AdminShell({ children, user }: { children: React.ReactNode; user: { name?: string | null; email: string; role: string } }) {
@@ -59,7 +65,7 @@ export function AdminShell({ children, user }: { children: React.ReactNode; user
         </div>
 
         <nav className="p-3 space-y-0.5 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 140px)' }}>
-          {navItems.map((item) => {
+          {navItems.filter((item) => item.roles.includes(user.role)).map((item) => {
             if ('children' in item && item.children) {
               const isExpanded = expandedGroups.includes(item.label)
               const hasActive = item.children.some(c => isActive(c.href))

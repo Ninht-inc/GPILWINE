@@ -1,8 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { guard, SUPER_ONLY } from '@/lib/rbac'
 import { prisma } from '@/lib/db'
 import { createAuditLog } from '@/lib/audit'
 
@@ -21,8 +20,9 @@ const KEYS = [
 const PASSWORD_KEY = 'smtp_password'
 
 export async function GET() {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const gate = await guard(SUPER_ONLY)
+  if ('error' in gate) return gate.error
+  const session = gate.session as any
 
   const rows = await prisma.siteSetting.findMany({
     where: { key: { in: [...KEYS, PASSWORD_KEY] } },
@@ -39,8 +39,9 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const gate = await guard(SUPER_ONLY)
+  if ('error' in gate) return gate.error
+  const session = gate.session as any
 
   const body = await request.json()
   const incoming: Record<string, unknown> = body?.settings ?? body ?? {}

@@ -56,6 +56,9 @@ export default function AdminLogin() {
               className="w-full bg-[#641B2A] text-[#F4EBDD] py-3 rounded-md font-medium hover:bg-[#3B101A] transition-colors disabled:opacity-50">
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
+            <div className="text-center">
+              <a href="/admin/forgot-password" className="text-[#641B2A] text-sm hover:underline">Forgot password?</a>
+            </div>
           </form>
         </div>
       </div>
